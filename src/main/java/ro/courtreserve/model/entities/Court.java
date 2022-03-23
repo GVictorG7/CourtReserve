@@ -29,11 +29,8 @@ public class Court implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "address", length = 40, nullable = false, unique = true)
+    @Column(name = "address", length = 40, nullable = false)
     private String address;
-
-    @Column(name = "availability")
-    private Boolean available;
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Price> prices = new ArrayList<>();

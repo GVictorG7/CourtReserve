@@ -38,7 +38,6 @@ public class CourtService {
         if (optionalCourt.isPresent()) {
             Court court = optionalCourt.get();
             court.setAddress(newCourtDTO.getAddress());
-            court.setAvailable(newCourtDTO.getAvailable());
             courtRepository.save(court);
             return true;
         } else {
