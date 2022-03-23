@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ro.courtreserve.model.DayPeriod;
 import ro.courtreserve.model.Season;
 
 import javax.persistence.Column;
@@ -39,12 +40,13 @@ public class Price implements Serializable {
     @Column(name = "weekend", nullable = false)
     private Boolean weekend;
 
-    @Column(name = "night", nullable = false)
-    private Boolean night;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "day_period", nullable = false)
+    private DayPeriod dayPeriod;
 
     public boolean equalsPeriod(Price price) {
         return Objects.equals(season, price.getSeason()) &&
                 Objects.equals(weekend, price.getWeekend()) &&
-                Objects.equals(night, price.getNight());
+                Objects.equals(dayPeriod, price.getDayPeriod());
     }
 }
