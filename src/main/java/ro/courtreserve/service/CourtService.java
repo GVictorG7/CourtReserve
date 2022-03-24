@@ -34,9 +34,8 @@ public class CourtService {
     }
 
     public boolean setPriceForCourt(Long courtId, PriceDTO priceDTO) {
-        Optional<Court> optionalCourt = courtRepository.findById(courtId);
-        if (optionalCourt.isPresent()) {
-            Court court = optionalCourt.get();
+        Court court = courtRepository.findById(courtId).orElse(null);
+        if (court != null) {
             Price price = mapper.map(priceDTO, Price.class);
 
             setCourtPrice(court, price);
@@ -49,13 +48,11 @@ public class CourtService {
     }
 
     public boolean deletePriceOfCourt(Long courtId, PriceDTO priceDTO) {
-        Optional<Court> optionalCourt = courtRepository.findById(courtId);
-        if (optionalCourt.isPresent()) {
-            Court court = optionalCourt.get();
+        Court court = courtRepository.findById(courtId).orElse(null);
+        if (court != null) {
             Price price = mapper.map(priceDTO, Price.class);
 
-            Optional<Price> existingPrice = court.getPrices().stream().filter(p -> p.equalsPeriod(price)).findFirst();
-            existingPrice.ifPresent(value -> court.getPrices().remove(value));
+            court.getPrices().removeIf(p -> p.equalsPeriod(price));
 
             courtRepository.save(court);
             return true;
