@@ -24,25 +24,13 @@ public class CourtService {
         return courts.stream().map(courtDTO -> mapper.map(courtDTO, CourtDTO.class)).collect(Collectors.toList());
     }
 
-    public void createCourt(CourtDTO courtDTO) {
+    public void saveCourt(CourtDTO courtDTO) {
         Court court = mapper.map(courtDTO, Court.class);
         courtRepository.save(court);
     }
 
     public void deleteCourt(Long id) {
         courtRepository.deleteById(id);
-    }
-
-    public boolean updateCourtDetails(CourtDTO newCourtDTO) {
-        Optional<Court> optionalCourt = courtRepository.findById(newCourtDTO.getId());
-        if (optionalCourt.isPresent()) {
-            Court court = optionalCourt.get();
-            court.setAddress(newCourtDTO.getAddress());
-            courtRepository.save(court);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public boolean setPriceForCourt(Long courtId, PriceDTO priceDTO) {

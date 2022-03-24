@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ro.courtreserve.model.dto.UserDTO;
 import ro.courtreserve.service.UserService;
 
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,7 +50,7 @@ class UserControllerTest {
                                 .content(MAPPER.writeValueAsString(login)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(MAPPER.writeValueAsString(loginResponse)));
-        Mockito.verify(service).singIn(login);
+        verify(service).singIn(login);
     }
 
     @Test
@@ -65,7 +66,7 @@ class UserControllerTest {
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(login)))
                 .andExpect(status().isForbidden());
-        Mockito.verify(service).singIn(login);
+        verify(service).singIn(login);
     }
 
     private UserDTO createUserDTO(boolean valid) {

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ro.courtreserve.model.dto.CourtDTO;
@@ -30,8 +29,8 @@ public class CourtController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Void> createCourt(@RequestBody CourtDTO courtDTO) {
-        service.createCourt(courtDTO);
+    public ResponseEntity<Void> saveCourt(@RequestBody CourtDTO courtDTO) {
+        service.saveCourt(courtDTO);
         return ResponseEntity.ok().build();
     }
 
@@ -39,12 +38,6 @@ public class CourtController {
     public ResponseEntity<Void> deleteCourt(@PathVariable Long id) {
         service.deleteCourt(id);
         return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/")
-    public ResponseEntity<Void> updateCourt(@RequestBody CourtDTO courtDTO) {
-        boolean success = service.updateCourtDetails(courtDTO);
-        return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @PostMapping("/{id}/price")
