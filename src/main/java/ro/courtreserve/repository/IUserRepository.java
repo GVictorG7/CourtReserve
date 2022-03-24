@@ -6,5 +6,5 @@ import ro.courtreserve.model.entities.User;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, Long> {
-    User findByUsernameAndPassword(String username, String password);
+    User getByUsernameAndPassword(String username, String password);
 }

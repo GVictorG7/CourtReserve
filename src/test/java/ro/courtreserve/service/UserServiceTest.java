@@ -44,7 +44,7 @@ class UserServiceTest {
 
         UserDTO signedInUserDTO = new UserDTO(USERNAME, PASSWORD, UserRole.ADMIN, MAIL);
 
-        when(repository.findByUsernameAndPassword(USERNAME, PASSWORD)).thenReturn(new User());
+        when(repository.getByUsernameAndPassword(USERNAME, PASSWORD)).thenReturn(new User());
         when(mapper.map(any(User.class), eq(UserDTO.class))).thenReturn(signedInUserDTO);
 
         // when
@@ -61,7 +61,7 @@ class UserServiceTest {
         dto.setUsername(USERNAME);
         dto.setPassword(PASSWORD);
 
-        when(repository.findByUsernameAndPassword(INVALID, INVALID)).thenReturn(null);
+        when(repository.getByUsernameAndPassword(INVALID, INVALID)).thenReturn(null);
 
         // when
         UserDTO actualResult = classUnderTest.singIn(dto);

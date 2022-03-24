@@ -14,7 +14,7 @@ public class UserService {
     private final ModelMapper mapper;
 
     public UserDTO singIn(UserDTO userDTO) {
-        User signedInUser = repository.findByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword());
+        User signedInUser = repository.getByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword());
         if (signedInUser == null) {
             return null;
         }

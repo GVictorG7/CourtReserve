@@ -34,13 +34,13 @@ class IUserRepositoryTest {
 
     @Test
     void testFindByUsernameAndPasswordRetrievesResult() {
-        User fetchedUser = classUnderTest.findByUsernameAndPassword(USERNAME, PASSWORD);
+        User fetchedUser = classUnderTest.getByUsernameAndPassword(USERNAME, PASSWORD);
         assertNotNull(fetchedUser);
     }
 
     @Test
     void testFindByUsernameAndPasswordDoesNotRetrievesResult() {
-        User fetchedUser = classUnderTest.findByUsernameAndPassword(INVALID, INVALID);
+        User fetchedUser = classUnderTest.getByUsernameAndPassword(INVALID, INVALID);
         assertNull(fetchedUser);
     }
 }
