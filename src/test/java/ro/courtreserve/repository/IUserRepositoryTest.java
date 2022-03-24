@@ -23,12 +23,7 @@ class IUserRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        User user = new User();
-        user.setId(1L);
-        user.setUsername(USERNAME);
-        user.setPassword(PASSWORD);
-        user.setMail(MAIL);
-        user.setRole(UserRole.ADMIN);
+        User user = new User(1L, USERNAME, PASSWORD, UserRole.ADMIN, MAIL);
         classUnderTest.save(user);
     }
 

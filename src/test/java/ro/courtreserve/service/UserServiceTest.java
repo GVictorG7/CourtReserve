@@ -42,7 +42,7 @@ class UserServiceTest {
         dto.setUsername(USERNAME);
         dto.setPassword(PASSWORD);
 
-        UserDTO signedInUserDTO = buildSignedInUserDTO();
+        UserDTO signedInUserDTO = new UserDTO(USERNAME, PASSWORD, UserRole.ADMIN, MAIL);
 
         when(repository.findByUsernameAndPassword(USERNAME, PASSWORD)).thenReturn(new User());
         when(mapper.map(any(User.class), eq(UserDTO.class))).thenReturn(signedInUserDTO);
@@ -68,15 +68,5 @@ class UserServiceTest {
 
         // then
         assertNull(actualResult);
-    }
-
-    private UserDTO buildSignedInUserDTO() {
-        UserDTO signedInUserDTO = new UserDTO();
-        signedInUserDTO.setUsername(USERNAME);
-        signedInUserDTO.setPassword(PASSWORD);
-        signedInUserDTO.setRole(UserRole.ADMIN);
-        signedInUserDTO.setMail(MAIL);
-
-        return signedInUserDTO;
     }
 }
