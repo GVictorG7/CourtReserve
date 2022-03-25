@@ -70,7 +70,7 @@ class CourtControllerIntegrationTest {
     @Test
     void testSaveNewCourt() throws Exception {
         CourtDTO courtDTO = new CourtDTO(null, "Address2", null);
-        CourtDTO savedCourtDTO = new CourtDTO(court.getId() + 2, "Address2", null);
+        CourtDTO savedCourtDTO = new CourtDTO(court.getId() + 2, "Address2", List.of());
         mockMvc.perform(
                         post(COURT_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
