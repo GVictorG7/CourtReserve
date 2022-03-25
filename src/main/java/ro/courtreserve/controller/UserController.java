@@ -19,6 +19,13 @@ import static org.springframework.http.HttpStatus.OK;
 public class UserController {
     private final UserService service;
 
+    /**
+     * The Log in endpoint. Should receive a {@link UserDTO} object with only the username and password fields set
+     *
+     * @param user the {@link UserDTO} with the login credentials
+     * @return status code 200 and the {@link UserDTO} with the rest of the details if the login succeeded or status
+     * code 403 if the login failed
+     */
     @PostMapping("/login")
     public ResponseEntity<UserDTO> logIn(@RequestBody UserDTO user) {
         UserDTO signedInUser = service.singIn(user);

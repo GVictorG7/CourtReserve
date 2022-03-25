@@ -43,6 +43,12 @@ public class Price implements Serializable {
     @Column(name = "day_period", nullable = false)
     private DayPeriod dayPeriod;
 
+    /**
+     * Check if the given {@link Price} object correspond with the time period of the actual object
+     *
+     * @param price the given {@link Price} object
+     * @return true if the given {@link Price} object has the same time period or false otherwise
+     */
     public boolean equalsPeriod(Price price) {
         return Objects.equals(season, price.getSeason()) &&
                 Objects.equals(weekend, price.getWeekend()) &&
