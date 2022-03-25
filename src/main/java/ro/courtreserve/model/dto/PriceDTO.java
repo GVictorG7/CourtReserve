@@ -13,5 +13,5 @@ public class PriceDTO {
     private Season season;
     private Float value;
     private Boolean weekend;
-    private DayPeriod night;
+    private DayPeriod dayPeriod;
 }
