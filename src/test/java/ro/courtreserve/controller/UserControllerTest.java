@@ -65,7 +65,8 @@ class UserControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(login)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(content().string(""));
         verify(service).singIn(login);
     }
 

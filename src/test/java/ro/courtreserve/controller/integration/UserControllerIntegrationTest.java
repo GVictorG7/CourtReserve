@@ -70,7 +70,8 @@ class UserControllerIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(login)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(content().string(""));
     }
 
     private UserDTO createUserDTO(boolean valid) {

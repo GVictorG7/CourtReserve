@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ro.courtreserve.model.dto.UserDTO;
 import ro.courtreserve.service.UserService;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.OK;
+
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -19,10 +22,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<UserDTO> logIn(@RequestBody UserDTO user) {
         UserDTO signedInUser = service.singIn(user);
-        HttpStatus status = HttpStatus.OK;
-        if (signedInUser == null) {
-            status = HttpStatus.FORBIDDEN;
-        }
-        return new ResponseEntity<>(signedInUser, status);
+        HttpStatus status = signedInUser == null ? FORBIDDEN : OK;
+        return ResponseEntity.status(status).body(signedInUser);
     }
 }
