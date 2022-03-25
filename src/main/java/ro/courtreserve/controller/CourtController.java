@@ -16,6 +16,9 @@ import ro.courtreserve.service.CourtService;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+
 @Controller
 @RequestMapping("/court")
 @RequiredArgsConstructor
@@ -25,13 +28,13 @@ public class CourtController {
     @GetMapping("/")
     public ResponseEntity<List<CourtDTO>> getCourts() {
         List<CourtDTO> courts = service.getAllCourts();
-        return new ResponseEntity<>(courts, HttpStatus.OK);
+        return ResponseEntity.ok(courts);
     }
 
     @PostMapping("/")
-    public ResponseEntity<Void> saveCourt(@RequestBody CourtDTO courtDTO) {
-        service.saveCourt(courtDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CourtDTO> saveCourt(@RequestBody CourtDTO courtDTO) {
+        CourtDTO savedCourt = service.saveCourt(courtDTO);
+        return ResponseEntity.ok(savedCourt);
     }
 
     @DeleteMapping("/{id}")
@@ -41,14 +44,16 @@ public class CourtController {
     }
 
     @PostMapping("/{id}/price")
-    public ResponseEntity<Void> setPrice(@PathVariable Long id, @RequestBody PriceDTO priceDTO) {
-        boolean success = service.setPriceForCourt(id, priceDTO);
-        return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    public ResponseEntity<CourtDTO> setPrice(@PathVariable Long id, @RequestBody PriceDTO priceDTO) {
+        CourtDTO savedCourt = service.setPriceForCourt(id, priceDTO);
+        HttpStatus status = savedCourt == null ? NOT_FOUND : OK;
+        return ResponseEntity.status(status).body(savedCourt);
     }
 
     @DeleteMapping("/{id}/price")
-    public ResponseEntity<Void> deletePrice(@PathVariable Long id, @RequestBody PriceDTO priceDTO) {
-        boolean success = service.deletePriceOfCourt(id, priceDTO);
-        return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    public ResponseEntity<CourtDTO> deletePrice(@PathVariable Long id, @RequestBody PriceDTO priceDTO) {
+        CourtDTO savedCourt = service.deletePriceOfCourt(id, priceDTO);
+        HttpStatus status = savedCourt == null ? NOT_FOUND : OK;
+        return ResponseEntity.status(status).body(savedCourt);
     }
 }

@@ -55,12 +55,16 @@ class CourtControllerTest {
     @Test
     void testSaveCourt() throws Exception {
         CourtDTO courtDTO = new CourtDTO();
+        CourtDTO savedCourtDTO = new CourtDTO();
+        when(service.saveCourt(courtDTO)).thenReturn(savedCourtDTO);
+
         mockMvc.perform(
                         post(COURT_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(courtDTO)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(savedCourtDTO)));
         verify(service).saveCourt(courtDTO);
     }
 
@@ -77,52 +81,62 @@ class CourtControllerTest {
     @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO();
-        when(service.setPriceForCourt(1L, priceDTO)).thenReturn(true);
+        CourtDTO savedCourtDTO = new CourtDTO();
+        when(service.setPriceForCourt(1L, priceDTO)).thenReturn(savedCourtDTO);
+
         mockMvc.perform(
                         post(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(savedCourtDTO)));
         verify(service).setPriceForCourt(1L, priceDTO);
     }
 
     @Test
     void testGivenInvalidCourtIdWhenSetPriceThenReturnNotFound() throws Exception {
         PriceDTO priceDTO = new PriceDTO();
-        when(service.setPriceForCourt(1L, priceDTO)).thenReturn(false);
+        when(service.setPriceForCourt(1L, priceDTO)).thenReturn(null);
+
         mockMvc.perform(
                         post(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
         verify(service).setPriceForCourt(1L, priceDTO);
     }
 
     @Test
     void testGivenValidCourtIdWhenDeletePriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO();
-        when(service.deletePriceOfCourt(1L, priceDTO)).thenReturn(true);
+        CourtDTO savedCourtDTO = new CourtDTO();
+        when(service.deletePriceOfCourt(1L, priceDTO)).thenReturn(savedCourtDTO);
+
         mockMvc.perform(
                         delete(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(savedCourtDTO)));
         verify(service).deletePriceOfCourt(1L, priceDTO);
     }
 
     @Test
     void testGivenInvalidCourtIdWhenDeletePriceThenReturnNotFound() throws Exception {
         PriceDTO priceDTO = new PriceDTO();
-        when(service.deletePriceOfCourt(1L, priceDTO)).thenReturn(false);
+        when(service.deletePriceOfCourt(1L, priceDTO)).thenReturn(null);
+
         mockMvc.perform(
                         delete(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
         verify(service).deletePriceOfCourt(1L, priceDTO);
     }
 }

@@ -69,15 +69,31 @@ class CourtControllerIntegrationTest {
     }
 
     @Test
-    void testSaveCourt() throws Exception {
-        CourtDTO courtDTO = new CourtDTO(2L, "Address2", null);
+    void testSaveNewCourt() throws Exception {
+        CourtDTO courtDTO = new CourtDTO(null, "Address2", null);
+        CourtDTO savedCourtDTO = new CourtDTO(court.getId() + 2, "Address2", null);
         mockMvc.perform(
                         post(COURT_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(courtDTO)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(savedCourtDTO)));
         assertEquals(2L, repository.count());
+    }
+
+    @Test
+    void testUpdateCourt() throws Exception {
+        CourtDTO courtDTO = modelMapper.map(court, CourtDTO.class);
+        courtDTO.setAddress("Address3");
+        mockMvc.perform(
+                        post(COURT_ENDPOINT)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .content(MAPPER.writeValueAsString(courtDTO)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(courtDTO)));
+        assertEquals(1L, repository.count());
     }
 
     @Test
@@ -86,36 +102,37 @@ class CourtControllerIntegrationTest {
                         delete(COURT_ENDPOINT + court.getId().toString())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(""));
         assertEquals(0L, repository.count());
     }
 
     @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO(Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
+        court.getPrices().get(0).setValue(20F);
+        CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
                         post(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isOk());
-        Court fetchedCourt = repository.findById(court.getId()).orElseThrow();
-        assertEquals(1, fetchedCourt.getPrices().size());
-        assertEquals(20F, fetchedCourt.getPrices().get(0).getValue());
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(updatedCourtDTO)));
     }
 
     @Test
     void testGivenValidCourtIdWhenSetNewPriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO(Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING);
+        court.getPrices().add(new Price(null, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING));
+        CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
                         post(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isOk());
-        Court fetchedCourt = repository.findById(court.getId()).orElseThrow();
-        assertEquals(2, fetchedCourt.getPrices().size());
-        assertEquals(20F, fetchedCourt.getPrices().get(1).getValue());
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(updatedCourtDTO)));
     }
 
     @Test
@@ -125,20 +142,21 @@ class CourtControllerIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(new PriceDTO())))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
     }
 
     @Test
     void testGivenValidCourtIdWhenDeletePriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO(Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
+        court.getPrices().clear();
         mockMvc.perform(
                         delete(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isOk());
-        Court fetchedCourt = repository.findById(court.getId()).orElseThrow();
-        assertTrue(fetchedCourt.getPrices().isEmpty());
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(court)));
     }
 
     @Test
@@ -148,7 +166,8 @@ class CourtControllerIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(new PriceDTO())))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
         Court fetchedCourt = repository.findById(court.getId()).orElseThrow();
         assertEquals(1, fetchedCourt.getPrices().size());
     }

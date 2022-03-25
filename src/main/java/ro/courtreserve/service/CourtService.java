@@ -24,40 +24,41 @@ public class CourtService {
         return courts.stream().map(courtDTO -> mapper.map(courtDTO, CourtDTO.class)).collect(Collectors.toList());
     }
 
-    public void saveCourt(CourtDTO courtDTO) {
+    public CourtDTO saveCourt(CourtDTO courtDTO) {
         Court court = mapper.map(courtDTO, Court.class);
-        courtRepository.save(court);
+        Court savedCourt = courtRepository.save(court);
+        return mapper.map(savedCourt, CourtDTO.class);
     }
 
     public void deleteCourt(Long id) {
         courtRepository.deleteById(id);
     }
 
-    public boolean setPriceForCourt(Long courtId, PriceDTO priceDTO) {
+    public CourtDTO setPriceForCourt(Long courtId, PriceDTO priceDTO) {
         Court court = courtRepository.findById(courtId).orElse(null);
         if (court != null) {
             Price price = mapper.map(priceDTO, Price.class);
 
             setCourtPrice(court, price);
 
-            courtRepository.save(court);
-            return true;
+            Court savedCourt = courtRepository.save(court);
+            return mapper.map(savedCourt, CourtDTO.class);
         } else {
-            return false;
+            return null;
         }
     }
 
-    public boolean deletePriceOfCourt(Long courtId, PriceDTO priceDTO) {
+    public CourtDTO deletePriceOfCourt(Long courtId, PriceDTO priceDTO) {
         Court court = courtRepository.findById(courtId).orElse(null);
         if (court != null) {
             Price price = mapper.map(priceDTO, Price.class);
 
             court.getPrices().removeIf(p -> p.equalsPeriod(price));
 
-            courtRepository.save(court);
-            return true;
+            Court savedCourt = courtRepository.save(court);
+            return mapper.map(savedCourt, CourtDTO.class);
         } else {
-            return false;
+            return null;
         }
     }
 
