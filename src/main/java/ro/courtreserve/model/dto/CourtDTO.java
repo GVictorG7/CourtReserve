@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +13,6 @@ import java.util.List;
 public class CourtDTO {
     private Long id;
     private String address;
-    private List<PriceDTO> prices;
+    private Set<PriceDTO> prices = new HashSet<>();
+    private Set<ReservationDTO> reservations = new HashSet<>();
 }

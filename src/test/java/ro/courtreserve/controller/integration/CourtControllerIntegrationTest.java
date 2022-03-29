@@ -19,7 +19,9 @@ import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.repository.ICourtRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -47,8 +49,8 @@ class CourtControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(classUnderTest).build();
-        List<Price> prices = List.of(new Price(1L, Season.WINTER, 10F, Boolean.TRUE, DayPeriod.MORNING));
-        court = repository.save(new Court(1L, ADDRESS, prices));
+        Set<Price> prices = Set.of(new Price(1L, Season.WINTER, 10F, Boolean.TRUE, DayPeriod.MORNING));
+        court = repository.save(new Court(1L, ADDRESS, prices, new HashSet<>()));
     }
 
     @AfterEach
@@ -69,8 +71,9 @@ class CourtControllerIntegrationTest {
 
     @Test
     void testSaveNewCourt() throws Exception {
-        CourtDTO courtDTO = new CourtDTO(null, "Address2", null);
-        CourtDTO savedCourtDTO = new CourtDTO(court.getId() + 2, "Address2", List.of());
+        CourtDTO courtDTO = new CourtDTO();
+        courtDTO.setAddress("Address2");
+        CourtDTO savedCourtDTO = new CourtDTO(court.getId() + 2, "Address2", Set.of(), Set.of());
         mockMvc.perform(
                         post(COURT_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +112,7 @@ class CourtControllerIntegrationTest {
     @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO(Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
-        court.getPrices().get(0).setValue(20F);
+        court.getPrices().stream().findFirst().ifPresent(price -> price.setValue(20F));
         CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
                         post(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)

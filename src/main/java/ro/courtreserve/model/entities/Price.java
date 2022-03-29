@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import ro.courtreserve.model.DayPeriod;
 import ro.courtreserve.model.Season;
 
@@ -53,5 +54,18 @@ public class Price implements Serializable {
         return Objects.equals(season, price.getSeason()) &&
                 Objects.equals(weekend, price.getWeekend()) &&
                 Objects.equals(dayPeriod, price.getDayPeriod());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Price price = (Price) o;
+        return id != null && Objects.equals(id, price.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

@@ -13,9 +13,10 @@ import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.repository.ICourtRepository;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -46,13 +47,13 @@ class CourtServiceTest {
 
     @Test
     void testSaveCourt() {
-        CourtDTO courtDTO = new CourtDTO(null, ADDRESS, null);
-        Court mappedCourt = new Court(null, ADDRESS, null);
+        CourtDTO courtDTO = new CourtDTO(null, ADDRESS, null, null);
+        Court mappedCourt = new Court(null, ADDRESS, null, null);
         when(mapper.map(courtDTO, Court.class)).thenReturn(mappedCourt);
 
-        Court savedCourt = new Court(1L, ADDRESS, null);
+        Court savedCourt = new Court(1L, ADDRESS, null, null);
         when(repository.save(mappedCourt)).thenReturn(savedCourt);
-        CourtDTO savedCourtDTO = new CourtDTO(1L, ADDRESS, null);
+        CourtDTO savedCourtDTO = new CourtDTO(1L, ADDRESS, null, null);
         when(mapper.map(savedCourt, CourtDTO.class)).thenReturn(savedCourtDTO);
 
         CourtDTO actualResult = classUnderTest.saveCourt(courtDTO);
@@ -83,7 +84,7 @@ class CourtServiceTest {
         when(repository.save(any(Court.class))).thenReturn(savedCourt);
 
         CourtDTO savedCourtDTO = new CourtDTO();
-        when(mapper.map(savedCourt,CourtDTO.class)).thenReturn(savedCourtDTO);
+        when(mapper.map(savedCourt, CourtDTO.class)).thenReturn(savedCourtDTO);
 
         CourtDTO actualResult = classUnderTest.setPriceForCourt(2L, priceDTO);
         assertEquals(savedCourtDTO, actualResult);
@@ -94,18 +95,19 @@ class CourtServiceTest {
 
     @Test
     void testGivenValidCourtIdWhenSetUpdatedPriceForCourtThenReturnPriceDTO() {
-        List<Price> prices = List.of(new Price(null, Season.WINTER, null, Boolean.TRUE, DayPeriod.EVENING));
-        Court court = new Court(null, null, prices);
+        Price price = new Price(null, Season.WINTER, null, Boolean.TRUE, DayPeriod.EVENING);
+        Set<Price> prices = Set.of(price);
+        Court court = new Court(null, null, prices, null);
 
         when(repository.findById(2L)).thenReturn(Optional.of(court));
         PriceDTO priceDTO = new PriceDTO();
-        when(mapper.map(priceDTO, Price.class)).thenReturn(prices.get(0));
+        when(mapper.map(priceDTO, Price.class)).thenReturn(price);
 
         Court savedCourt = new Court();
         when(repository.save(any(Court.class))).thenReturn(savedCourt);
 
         CourtDTO savedCourtDTO = new CourtDTO();
-        when(mapper.map(savedCourt,CourtDTO.class)).thenReturn(savedCourtDTO);
+        when(mapper.map(savedCourt, CourtDTO.class)).thenReturn(savedCourtDTO);
 
         CourtDTO actualResult = classUnderTest.setPriceForCourt(2L, priceDTO);
         assertEquals(savedCourtDTO, actualResult);
@@ -121,19 +123,20 @@ class CourtServiceTest {
 
     @Test
     void testGivenValidCourtIdWhenDeletePriceForCourtThenReturnPriceDTO() {
-        List<Price> prices = new ArrayList<>();
-        prices.add(new Price(null, Season.WINTER, null, Boolean.TRUE, DayPeriod.EVENING));
-        Court court = new Court(null, null, prices);
+        Price price = new Price(null, Season.WINTER, null, Boolean.TRUE, DayPeriod.EVENING);
+        Set<Price> prices = new HashSet<>();
+        prices.add(price);
+        Court court = new Court(null, null, prices, null);
 
         when(repository.findById(2L)).thenReturn(Optional.of(court));
         PriceDTO priceDTO = new PriceDTO();
-        when(mapper.map(priceDTO, Price.class)).thenReturn(prices.get(0));
+        when(mapper.map(priceDTO, Price.class)).thenReturn(price);
 
         Court savedCourt = new Court();
         when(repository.save(any(Court.class))).thenReturn(savedCourt);
 
         CourtDTO savedCourtDTO = new CourtDTO();
-        when(mapper.map(savedCourt,CourtDTO.class)).thenReturn(savedCourtDTO);
+        when(mapper.map(savedCourt, CourtDTO.class)).thenReturn(savedCourtDTO);
 
         CourtDTO actualResult = classUnderTest.deletePriceOfCourt(2L, priceDTO);
         assertEquals(savedCourtDTO, actualResult);

@@ -9,7 +9,6 @@ import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.repository.ICourtRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,9 +38,6 @@ public class CourtService {
      */
     public CourtDTO saveCourt(CourtDTO courtDTO) {
         Court court = mapper.map(courtDTO, Court.class);
-        if (court.getPrices() == null) {
-            court.setPrices(new ArrayList<>());
-        }
         Court savedCourt = courtRepository.save(court);
         return mapper.map(savedCourt, CourtDTO.class);
     }
