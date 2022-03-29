@@ -10,7 +10,6 @@ import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.repository.ICourtRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -106,12 +105,8 @@ public class CourtService {
      * @param newPrice the {@link Price} to be updated or added
      */
     private void setCourtPrice(Court court, Price newPrice) {
-        Optional<Price> existingPrice = court.getPrices().stream().filter(p -> p.equalsPeriod(newPrice)).findFirst();
-        if (existingPrice.isPresent()) {
-            Price price = existingPrice.get();
-            price.setValue(newPrice.getValue());
-        } else {
-            court.getPrices().add(newPrice);
-        }
+        court.getPrices().stream().filter(p -> p.equalsPeriod(newPrice)).findFirst().ifPresentOrElse(
+                price -> price.setValue(newPrice.getValue()),
+                () -> court.getPrices().add(newPrice));
     }
 }
