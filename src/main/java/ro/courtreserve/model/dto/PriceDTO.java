@@ -10,6 +10,7 @@ import ro.courtreserve.model.Season;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PriceDTO {
+    private Long id;
     private Season season;
     private Float value;
     private Boolean weekend;

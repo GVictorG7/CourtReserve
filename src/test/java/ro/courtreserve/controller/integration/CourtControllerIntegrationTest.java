@@ -111,7 +111,7 @@ class CourtControllerIntegrationTest {
 
     @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {
-        PriceDTO priceDTO = new PriceDTO(Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
+        PriceDTO priceDTO = new PriceDTO(1L, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
         court.getPrices().stream().findFirst().ifPresent(price -> price.setValue(20F));
         CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
@@ -125,8 +125,9 @@ class CourtControllerIntegrationTest {
 
     @Test
     void testGivenValidCourtIdWhenSetNewPriceThenReturnOk() throws Exception {
-        PriceDTO priceDTO = new PriceDTO(Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING);
-        court.getPrices().add(new Price(null, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING));
+        Long nextPriceId =  court.getPrices().iterator().next().getId() + 1;
+        PriceDTO priceDTO = new PriceDTO(nextPriceId, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING);
+        court.getPrices().add(new Price(nextPriceId, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING));
         CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
                         post(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
@@ -150,7 +151,7 @@ class CourtControllerIntegrationTest {
 
     @Test
     void testGivenValidCourtIdWhenDeletePriceThenReturnOk() throws Exception {
-        PriceDTO priceDTO = new PriceDTO(Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
+        PriceDTO priceDTO = new PriceDTO(1L, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
         court.getPrices().clear();
         mockMvc.perform(
                         delete(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
