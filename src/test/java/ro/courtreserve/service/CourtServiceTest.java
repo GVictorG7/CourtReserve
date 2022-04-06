@@ -46,6 +46,30 @@ class CourtServiceTest {
     }
 
     @Test
+    void testGivenValidIdWhenGetCourtByIdThenReturnCourtDTO() {
+        CourtDTO courtDTO = new CourtDTO();
+        Court court = new Court();
+        Long id = 1L;
+
+        when(repository.findById(id)).thenReturn(Optional.of(court));
+        when(mapper.map(court, CourtDTO.class)).thenReturn(courtDTO);
+
+        CourtDTO actualResult = classUnderTest.getCourtById(id);
+        assertEquals(courtDTO, actualResult);
+    }
+
+    @Test
+    void testGivenInvalidIdWhenGetCourtByIdThenReturnNull() {
+        Long id = 1L;
+
+        when(repository.findById(id)).thenReturn(Optional.empty());
+        when(mapper.map(null, CourtDTO.class)).thenReturn(null);
+
+        CourtDTO actualResult = classUnderTest.getCourtById(id);
+        assertNull(actualResult);
+    }
+
+    @Test
     void testSaveCourt() {
         CourtDTO courtDTO = new CourtDTO(null, ADDRESS, null, null);
         Court mappedCourt = new Court(null, ADDRESS, null, null);

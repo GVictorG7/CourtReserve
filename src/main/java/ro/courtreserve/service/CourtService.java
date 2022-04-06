@@ -29,6 +29,17 @@ public class CourtService {
     }
 
     /**
+     * Retrieves the {@link CourtDTO} corresponding to the given id
+     *
+     * @param id the id of the {@link Court}
+     * @return the {@link CourtDTO} with the given id or null if no {@link Court} exists with that id
+     */
+    public CourtDTO getCourtById(Long id) {
+        Court court = courtRepository.findById(id).orElse(null);
+        return court == null ? null : mapper.map(court, CourtDTO.class);
+    }
+
+    /**
      * Persists a given {@link CourtDTO} object, or modifies an existing one, based on the courtId.
      * NOTE: in order to correctly modify an existing {@link Court}, the exact list of {@link Price}s must be provided
      *

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +22,13 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Controller
 @RequestMapping("/court")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class CourtController {
     private final CourtService service;
 
     /**
-     * Retrieved all the {@link CourtDTO}
+     * Retrieves all the {@link CourtDTO}
      *
      * @return a {@link List} with all the {@link CourtDTO} objects
      */
@@ -34,6 +36,20 @@ public class CourtController {
     public ResponseEntity<List<CourtDTO>> getCourts() {
         List<CourtDTO> courts = service.getAllCourts();
         return ResponseEntity.ok(courts);
+    }
+
+    /**
+     * Retrieves the {@link CourtDTO} corresponding to the given id as PathVariable
+     *
+     * @param id the id of the {@link CourtDTO}
+     * @return status code 200 with the {@link CourtDTO} with the corresponding id or status code 404 if the provided id
+     * was not found
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<CourtDTO> getCourtById(@PathVariable Long id) {
+        CourtDTO courtDTO = service.getCourtById(id);
+        HttpStatus status = courtDTO == null ? NOT_FOUND : OK;
+        return ResponseEntity.status(status).body(courtDTO);
     }
 
     /**

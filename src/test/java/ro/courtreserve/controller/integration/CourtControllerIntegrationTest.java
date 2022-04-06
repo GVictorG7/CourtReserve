@@ -70,6 +70,29 @@ class CourtControllerIntegrationTest {
     }
 
     @Test
+    void testGivenValidIdWhenGetCourtByIdThenReturnCourtDTO() throws Exception {
+        Long id = court.getId();
+        CourtDTO courtDTO = modelMapper.map(court, CourtDTO.class);
+
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(courtDTO)));
+    }
+
+    @Test
+    void testGivenInvalidIdWhenGetCourtByIdThenReturnNull() throws Exception {
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + "0")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+    }
+
+    @Test
     void testSaveNewCourt() throws Exception {
         CourtDTO courtDTO = new CourtDTO();
         courtDTO.setAddress("Address2");

@@ -53,6 +53,35 @@ class CourtControllerTest {
     }
 
     @Test
+    void testGivenValidIdWhenGetCourtByIdThenReturnCourtDTO() throws Exception {
+        Long id = 1L;
+        CourtDTO courtDTO = new CourtDTO();
+        when(service.getCourtById(id)).thenReturn(courtDTO);
+
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(courtDTO)));
+        verify(service).getCourtById(1L);
+    }
+
+    @Test
+    void testGivenInvalidIdWhenGetCourtByIdThenReturnNull() throws Exception {
+        Long id = 1L;
+        when(service.getCourtById(id)).thenReturn(null);
+
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+        verify(service).getCourtById(1L);
+    }
+
+    @Test
     void testSaveCourt() throws Exception {
         CourtDTO courtDTO = new CourtDTO();
         CourtDTO savedCourtDTO = new CourtDTO();
