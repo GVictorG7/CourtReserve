@@ -134,6 +134,27 @@ class CourtControllerIntegrationTest {
     }
 
     @Test
+    void testGivenInvalidCourtIdWhenGetAllPricesForCourtThenNotFound() throws Exception {
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + "0" + PRICE_ENDPOINT)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void testGivenValidCourtIdWhenGetAllPricesForCourtThenOk() throws Exception {
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(court.getPrices())));
+    }
+
+
+    @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO(1L, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
         court.getPrices().stream().findFirst().ifPresent(price -> price.setValue(20F));

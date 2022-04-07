@@ -97,6 +97,18 @@ class CourtServiceTest {
     }
 
     @Test
+    void testGivenInvalidCourtIdWhenGetAllPricesForCourtThenThrows() {
+        assertThrows(NoSuchElementException.class, () -> classUnderTest.getAllPricesForCourt(1L));
+    }
+
+    @Test
+    void testGivenValidCourtIdWhenGetAllPricesForCourtThenReturn() {
+        Court court = new Court(null, null, Set.of(), null);
+        when(repository.findById(1L)).thenReturn(Optional.of(court));
+        assertEquals(Set.of(), classUnderTest.getAllPricesForCourt(1L));
+    }
+
+    @Test
     void testGivenInvalidCourtIdWhenSetPriceForCourtThenReturnNull() {
         assertNull(classUnderTest.setPriceForCourt(2L, null));
     }

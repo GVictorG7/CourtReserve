@@ -11,6 +11,7 @@ import ro.courtreserve.repository.ICourtRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,6 +61,17 @@ public class CourtService {
      */
     public void deleteCourt(Long id) {
         courtRepository.deleteById(id);
+    }
+
+    /**
+     * Retrieves all the {@link PriceDTO}s for the {@link CourtDTO} with the given id
+     *
+     * @param courtId the if of the {@link CourtDTO}
+     * @return a set with the {@link PriceDTO}s of the {@link CourtDTO} with the given id
+     */
+    public Set<PriceDTO> getAllPricesForCourt(Long courtId) {
+        Court court = courtRepository.findById(courtId).orElseThrow();
+        return court.getPrices().stream().map(price -> mapper.map(price, PriceDTO.class)).collect(Collectors.toSet());
     }
 
     /**

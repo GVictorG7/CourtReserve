@@ -14,6 +14,7 @@ import ro.courtreserve.service.CourtService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -107,6 +108,32 @@ class CourtControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(service).deleteCourt(1L);
+    }
+
+    @Test
+    void testGivenInvalidCourtIdWhenGetAllPricesForCourtThenNotFound() throws Exception {
+        doThrow(NoSuchElementException.class).when(service).getAllPricesForCourt(1L);
+
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+        verify(service).getAllPricesForCourt(1L);
+    }
+
+    @Test
+    void testGivenValidCourtIdWhenGetAllPricesForCourtThenOk() throws Exception {
+        when(service.getAllPricesForCourt(1L)).thenReturn(Set.of());
+
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(Set.of())));
+        verify(service).getAllPricesForCourt(1L);
     }
 
     @Test

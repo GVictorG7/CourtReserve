@@ -17,6 +17,7 @@ import ro.courtreserve.service.CourtService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -77,6 +78,23 @@ public class CourtController {
     public ResponseEntity<Void> deleteCourt(@PathVariable Long id) {
         service.deleteCourt(id);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Retrieves as set with the {@link PriceDTO}s of the {@link CourtDTO} with the given id as PathVariable
+     *
+     * @param id the id of the {@link CourtDTO}
+     * @return status code 200 with the set of {@link PriceDTO}s or status code 404 if no {@link CourtDTO} exists with
+     * the given id
+     */
+    @GetMapping("/{id}/price")
+    public ResponseEntity<Set<PriceDTO>> getAllPricesForCourt(@PathVariable Long id) {
+        try {
+            Set<PriceDTO> prices = service.getAllPricesForCourt(id);
+            return ResponseEntity.ok(prices);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
