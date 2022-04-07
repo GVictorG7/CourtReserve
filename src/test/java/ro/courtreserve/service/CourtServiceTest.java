@@ -159,7 +159,7 @@ class CourtServiceTest {
 
     @Test
     void testGivenValidCourtIdWhenSetUpdatedPriceForCourtThenReturnPriceDTO() {
-        Price price = new Price(null, Season.WINTER, null, Boolean.TRUE, DayPeriod.EVENING);
+        Price price = new Price(1L, null, null, null, null);
         Set<Price> prices = Set.of(price);
         Court court = new Court(null, null, prices, null);
 

@@ -135,8 +135,8 @@ public class CourtService {
      * @param newPrice the {@link Price} to be updated or added
      */
     private void setCourtPrice(Court court, Price newPrice) {
-        court.getPrices().stream().filter(p -> p.equalsPeriod(newPrice)).findFirst().ifPresentOrElse(
-                price -> price.setValue(newPrice.getValue()),
+        court.getPrices().stream().filter(p -> p.getId().equals(newPrice.getId())).findFirst().ifPresentOrElse(
+                price -> price.overrideFieldValues(newPrice),
                 () -> court.getPrices().add(newPrice));
     }
 }

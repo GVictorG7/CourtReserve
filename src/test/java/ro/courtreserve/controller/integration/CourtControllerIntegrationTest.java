@@ -188,8 +188,10 @@ class CourtControllerIntegrationTest {
 
     @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {
-        PriceDTO priceDTO = new PriceDTO(1L, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
-        court.getPrices().stream().findFirst().ifPresent(price -> price.setValue(20F));
+        Long priceId = court.getPrices().iterator().next().getId();
+        PriceDTO priceDTO = new PriceDTO(priceId, Season.SUMMER, 30F, Boolean.FALSE, DayPeriod.EVENING);
+        Price expectedPrice = modelMapper.map(priceDTO, Price.class);
+        court.getPrices().stream().findFirst().ifPresent(price -> price.overrideFieldValues(expectedPrice));
         CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
                         post(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT)

@@ -45,15 +45,16 @@ public class Price implements Serializable {
     private DayPeriod dayPeriod;
 
     /**
-     * Check if the given {@link Price} object correspond with the time period of the actual object
+     * Overrides the value of each field with the given {@link Price}
      *
-     * @param price the given {@link Price} object
-     * @return true if the given {@link Price} object has the same time period or false otherwise
+     * @param price the {@link Price} whose values will be used
      */
-    public boolean equalsPeriod(Price price) {
-        return Objects.equals(season, price.getSeason()) &&
-                Objects.equals(weekend, price.getWeekend()) &&
-                Objects.equals(dayPeriod, price.getDayPeriod());
+    public void overrideFieldValues(Price price) {
+        id = price.getId();
+        season = price.getSeason();
+        value = price.getValue();
+        weekend = price.getWeekend();
+        dayPeriod = price.getDayPeriod();
     }
 
     @Override

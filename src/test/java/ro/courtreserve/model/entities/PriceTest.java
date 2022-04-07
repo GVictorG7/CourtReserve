@@ -1,58 +1,24 @@
 package ro.courtreserve.model.entities;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ro.courtreserve.model.DayPeriod;
 import ro.courtreserve.model.Season;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PriceTest {
-    private Price classUnderTest;
-
-    @BeforeEach
-    void setUp() {
-        classUnderTest = new Price();
-        classUnderTest.setSeason(Season.SUMMER);
-        classUnderTest.setWeekend(Boolean.TRUE);
-        classUnderTest.setDayPeriod(DayPeriod.MORNING);
-    }
-
     @Test
-    void testNotEqualsPeriodDifferentSeason() {
-        Price price = new Price();
-        price.setSeason(Season.WINTER);
+    void testOverrideFieldValues() {
+        Price price1 = new Price();
 
-        assertFalse(classUnderTest.equalsPeriod(price));
-    }
+        Price price2 = new Price(1L, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
 
-    @Test
-    void testNotEqualsPeriodDifferentWeekend() {
-        Price price = new Price();
-        price.setSeason(Season.SUMMER);
-        price.setWeekend(Boolean.FALSE);
-
-        assertFalse(classUnderTest.equalsPeriod(price));
-    }
-
-    @Test
-    void testNotEqualsPeriodDifferentDayPeriod() {
-        Price price = new Price();
-        price.setSeason(Season.SUMMER);
-        price.setWeekend(Boolean.TRUE);
-        price.setDayPeriod(DayPeriod.EVENING);
-
-        assertFalse(classUnderTest.equalsPeriod(price));
-    }
-
-    @Test
-    void testEqualsPeriod() {
-        Price price = new Price();
-        price.setSeason(Season.SUMMER);
-        price.setWeekend(Boolean.TRUE);
-        price.setDayPeriod(DayPeriod.MORNING);
-
-        assertTrue(classUnderTest.equalsPeriod(price));
+        price1.overrideFieldValues(price2);
+        assertEquals(1L, price1.getId());
+        assertEquals(Season.WINTER, price1.getSeason());
+        assertEquals(20F, price1.getValue());
+        assertTrue(price1.getWeekend());
+        assertEquals(DayPeriod.MORNING, price1.getDayPeriod());
     }
 }
