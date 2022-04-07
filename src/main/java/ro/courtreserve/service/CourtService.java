@@ -10,6 +10,7 @@ import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.repository.ICourtRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,25 +88,18 @@ public class CourtService {
 
     /**
      * Deletes a {@link PriceDTO} for the {@link CourtDTO} with the given id. The {@link PriceDTO} is identified based
-     * on its time period
+     * on its provided id
      *
-     * @param courtId  the id of the {@link CourtDTO}
-     * @param priceDTO the {@link PriceDTO} to be deleted
-     * @return the {@link CourtDTO} that was updated with the deleted priceDTO, or null if the provided courtId does not
-     * correspond to an existing {@link Court}
+     * @param courtId the id of the {@link CourtDTO}
+     * @param priceId the if of the {@link PriceDTO} to be deleted
      */
-    public CourtDTO deletePriceOfCourt(Long courtId, PriceDTO priceDTO) {
-        Court court = courtRepository.findById(courtId).orElse(null);
-        if (court != null) {
-            Price price = mapper.map(priceDTO, Price.class);
-
-            court.getPrices().removeIf(p -> p.equalsPeriod(price));
-
-            Court savedCourt = courtRepository.save(court);
-            return mapper.map(savedCourt, CourtDTO.class);
-        } else {
-            return null;
+    public void deletePriceOfCourt(Long courtId, Long priceId) {
+        Court court = courtRepository.findById(courtId).orElseThrow();
+        boolean removalPerformed = court.getPrices().removeIf(price -> price.getId().equals(priceId));
+        if (!removalPerformed) {
+            throw new NoSuchElementException();
         }
+        courtRepository.save(court);
     }
 
     /**

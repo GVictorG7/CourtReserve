@@ -15,11 +15,14 @@ import ro.courtreserve.repository.ICourtRepository;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -141,32 +144,28 @@ class CourtServiceTest {
     }
 
     @Test
-    void testGivenInvalidCourtIdWhenDeletePriceForCourtThenReturnNull() {
-        assertNull(classUnderTest.deletePriceOfCourt(2L, null));
+    void testGivenInvalidCourtIdWhenDeletePriceForCourtThenThrows() {
+        assertThrows(NoSuchElementException.class, () -> classUnderTest.deletePriceOfCourt(2L, null));
     }
 
     @Test
-    void testGivenValidCourtIdWhenDeletePriceForCourtThenReturnPriceDTO() {
-        Price price = new Price(null, Season.WINTER, null, Boolean.TRUE, DayPeriod.EVENING);
+    void testGivenValidCourtIdAndInvalidPriceIdWhenDeletePriceForCourtThenThrows() {
+        Court court = new Court(2L, null, new HashSet<>(), null);
+        when(repository.findById(2L)).thenReturn(Optional.of(court));
+        assertThrows(NoSuchElementException.class, () -> classUnderTest.deletePriceOfCourt(2L, null));
+    }
+
+    @Test
+    void testGivenValidCourtIdAndValidPriceIdWhenDeletePriceForCourtThenNotThrow() {
+        Price price = new Price(1L, null, null, null, null);
         Set<Price> prices = new HashSet<>();
         prices.add(price);
-        Court court = new Court(null, null, prices, null);
+        Court court = new Court(1L, null, prices, null);
 
-        when(repository.findById(2L)).thenReturn(Optional.of(court));
-        PriceDTO priceDTO = new PriceDTO();
-        when(mapper.map(priceDTO, Price.class)).thenReturn(price);
+        when(repository.findById(1L)).thenReturn(Optional.of(court));
 
-        Court savedCourt = new Court();
-        when(repository.save(any(Court.class))).thenReturn(savedCourt);
-
-        CourtDTO savedCourtDTO = new CourtDTO();
-        when(mapper.map(savedCourt, CourtDTO.class)).thenReturn(savedCourtDTO);
-
-        CourtDTO actualResult = classUnderTest.deletePriceOfCourt(2L, priceDTO);
-        assertEquals(savedCourtDTO, actualResult);
-        assertEquals(0, prices.size());
-        verify(mapper).map(priceDTO, Price.class);
-        verify(mapper).map(savedCourt, CourtDTO.class);
+        assertDoesNotThrow(() -> classUnderTest.deletePriceOfCourt(1L, 1L));
+        court.setPrices(Set.of());
         verify(repository).save(court);
     }
 }

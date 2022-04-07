@@ -13,7 +13,9 @@ import ro.courtreserve.model.dto.PriceDTO;
 import ro.courtreserve.service.CourtService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -140,32 +142,23 @@ class CourtControllerTest {
 
     @Test
     void testGivenValidCourtIdWhenDeletePriceThenReturnOk() throws Exception {
-        PriceDTO priceDTO = new PriceDTO();
-        CourtDTO savedCourtDTO = new CourtDTO();
-        when(service.deletePriceOfCourt(1L, priceDTO)).thenReturn(savedCourtDTO);
-
         mockMvc.perform(
-                        delete(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
+                        delete(COURT_ENDPOINT + "1" + PRICE_ENDPOINT + "/1")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(MAPPER.writeValueAsString(savedCourtDTO)));
-        verify(service).deletePriceOfCourt(1L, priceDTO);
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(service).deletePriceOfCourt(1L, 1L);
     }
 
     @Test
     void testGivenInvalidCourtIdWhenDeletePriceThenReturnNotFound() throws Exception {
-        PriceDTO priceDTO = new PriceDTO();
-        when(service.deletePriceOfCourt(1L, priceDTO)).thenReturn(null);
+        doThrow(NoSuchElementException.class).when(service).deletePriceOfCourt(1L, 1L);
 
         mockMvc.perform(
-                        delete(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)
+                        delete(COURT_ENDPOINT + "1" + PRICE_ENDPOINT + "/1")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
-        verify(service).deletePriceOfCourt(1L, priceDTO);
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        verify(service).deletePriceOfCourt(1L, 1L);
     }
 }

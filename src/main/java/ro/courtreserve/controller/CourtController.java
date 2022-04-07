@@ -16,6 +16,7 @@ import ro.courtreserve.model.dto.PriceDTO;
 import ro.courtreserve.service.CourtService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -97,17 +98,21 @@ public class CourtController {
 
     /**
      * Deletes a {@link PriceDTO} for the {@link CourtDTO} with the given id provided by PathVariable. The
-     * {@link PriceDTO} is identified based on its time period
+     * {@link PriceDTO} is identified based on its id provided as PathVariable
      *
-     * @param id       the id of the {@link CourtDTO}
-     * @param priceDTO the {@link PriceDTO} to be deleted
+     * @param courtId the id of the {@link CourtDTO}
+     * @param priceId the id of the {@link PriceDTO} to be deleted
      * @return status code 200 with the {@link CourtDTO} object as it was persisted with the deleted {@link PriceDTO} or
      * status code 404 if the provided id does not correspond to any existing {@link CourtDTO}
      */
-    @DeleteMapping("/{id}/price")
-    public ResponseEntity<CourtDTO> deletePrice(@PathVariable Long id, @RequestBody PriceDTO priceDTO) {
-        CourtDTO savedCourt = service.deletePriceOfCourt(id, priceDTO);
-        HttpStatus status = savedCourt == null ? NOT_FOUND : OK;
-        return ResponseEntity.status(status).body(savedCourt);
+    @DeleteMapping("/{courtId}/price/{priceId}")
+    public ResponseEntity<Void> deletePrice(@PathVariable Long courtId, @PathVariable Long priceId) {
+        HttpStatus status = OK;
+        try {
+            service.deletePriceOfCourt(courtId, priceId);
+        } catch (NoSuchElementException e) {
+            status = NOT_FOUND;
+        }
+        return ResponseEntity.status(status).build();
     }
 }

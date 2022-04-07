@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -124,7 +125,7 @@ class CourtControllerIntegrationTest {
     @Test
     void testDeleteCourt() throws Exception {
         mockMvc.perform(
-                        delete(COURT_ENDPOINT + court.getId().toString())
+                        delete(COURT_ENDPOINT + court.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -138,7 +139,7 @@ class CourtControllerIntegrationTest {
         court.getPrices().stream().findFirst().ifPresent(price -> price.setValue(20F));
         CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
-                        post(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
+                        post(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
@@ -148,12 +149,12 @@ class CourtControllerIntegrationTest {
 
     @Test
     void testGivenValidCourtIdWhenSetNewPriceThenReturnOk() throws Exception {
-        Long nextPriceId =  court.getPrices().iterator().next().getId() + 1;
+        Long nextPriceId = court.getPrices().iterator().next().getId() + 1;
         PriceDTO priceDTO = new PriceDTO(nextPriceId, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING);
         court.getPrices().add(new Price(nextPriceId, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.EVENING));
         CourtDTO updatedCourtDTO = modelMapper.map(court, CourtDTO.class);
         mockMvc.perform(
-                        post(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
+                        post(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(MAPPER.writeValueAsString(priceDTO)))
@@ -173,27 +174,35 @@ class CourtControllerIntegrationTest {
     }
 
     @Test
-    void testGivenValidCourtIdWhenDeletePriceThenReturnOk() throws Exception {
-        PriceDTO priceDTO = new PriceDTO(1L, Season.WINTER, 20F, Boolean.TRUE, DayPeriod.MORNING);
-        court.getPrices().clear();
+    void testGivenValidCourtIdAndValidPriceIdWhenDeletePriceThenReturnOk() throws Exception {
+        Long priceId = court.getPrices().iterator().next().getId();
         mockMvc.perform(
-                        delete(COURT_ENDPOINT + court.getId().toString() + PRICE_ENDPOINT)
+                        delete(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT + "/" + priceId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(MAPPER.writeValueAsString(priceDTO)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(MAPPER.writeValueAsString(court)));
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        Court fetchedCourt = repository.findById(court.getId()).orElseThrow();
+        assertTrue(fetchedCourt.getPrices().isEmpty());
     }
 
     @Test
     void testGivenInvalidCourtIdWhenDeletePriceThenReturnNotFound() throws Exception {
         mockMvc.perform(
-                        delete(COURT_ENDPOINT + "0" + PRICE_ENDPOINT)
+                        delete(COURT_ENDPOINT + "0" + PRICE_ENDPOINT + "/0")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(MAPPER.writeValueAsString(new PriceDTO())))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        Court fetchedCourt = repository.findById(court.getId()).orElseThrow();
+        assertEquals(1, fetchedCourt.getPrices().size());
+    }
+
+    @Test
+    void testGivenValidCourtIdAndInvalidPriceIdWhenSetPriceThenReturnNotFound() throws Exception {
+        mockMvc.perform(
+                        delete(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT + "/0")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
         Court fetchedCourt = repository.findById(court.getId()).orElseThrow();
         assertEquals(1, fetchedCourt.getPrices().size());
     }
