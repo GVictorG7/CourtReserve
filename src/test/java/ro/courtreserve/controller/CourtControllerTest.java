@@ -137,6 +137,32 @@ class CourtControllerTest {
     }
 
     @Test
+    void testGivenInvalidIdWhenGetPriceByIdThenNotFound() throws Exception {
+        doThrow(NoSuchElementException.class).when(service).getPriceById(1L, 1L);
+
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + "1" + PRICE_ENDPOINT + "/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+        verify(service).getPriceById(1L, 1L);
+    }
+
+    @Test
+    void testGivenValidIdWhenGetPriceByIdThenOk() throws Exception {
+        when(service.getPriceById(1L, 1L)).thenReturn(new PriceDTO());
+
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + "1" + PRICE_ENDPOINT+ "/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(new PriceDTO())));
+        verify(service).getPriceById(1L, 1L);
+    }
+
+    @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {
         PriceDTO priceDTO = new PriceDTO();
         CourtDTO savedCourtDTO = new CourtDTO();

@@ -75,6 +75,19 @@ public class CourtService {
     }
 
     /**
+     * Retrieves the {@link PriceDTO} with the specified id, corresponding to the {@link CourtDTO} with the specified id
+     *
+     * @param courtId the id of the {@link CourtDTO}
+     * @param priceId the id of the {@link PriceDTO}
+     * @return the {@link PriceDTO} with the given id of the {@link CourtDTO} with the given id
+     */
+    public PriceDTO getPriceById(Long courtId, Long priceId) {
+        Court court = courtRepository.findById(courtId).orElseThrow();
+        Price foundPrice = court.getPrices().stream().filter(price -> price.getId().equals(priceId)).findFirst().orElseThrow();
+        return mapper.map(foundPrice, PriceDTO.class);
+    }
+
+    /**
      * Sets a {@link PriceDTO} for the {@link CourtDTO} with the given id. If there is no other {@link PriceDTO} with
      * the same time period of time for the {@link CourtDTO} then the price will be inserted as new, otherwise only its
      * value will be updated

@@ -98,6 +98,25 @@ public class CourtController {
     }
 
     /**
+     * Retrieves the {@link PriceDTO} with the given id as PathVariable, corresponding to the {@link CourtDTO} with the
+     * given id as PathVariable
+     *
+     * @param courtId the id of the {@link CourtDTO}
+     * @param priceId the id of the {@link PriceDTO}
+     * @return status code 200 with the searched {@link PriceDTO} or status code 404 if the {@link CourtDTO} or
+     * {@link PriceDTO} with the given ids were not found
+     */
+    @GetMapping("/{courtId}/price/{priceId}")
+    public ResponseEntity<PriceDTO> getPriceById(@PathVariable Long courtId, @PathVariable Long priceId) {
+        try {
+            PriceDTO priceDTO = service.getPriceById(courtId, priceId);
+            return ResponseEntity.ok(priceDTO);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
      * Sets a {@link PriceDTO} for the {@link CourtDTO} with the given id provided by PathVariable. If there is no other
      * {@link PriceDTO} with the same time period of time for the {@link CourtDTO} then the price will be inserted as
      * new, otherwise only its value will be updated

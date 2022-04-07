@@ -153,6 +153,38 @@ class CourtControllerIntegrationTest {
                 .andExpect(content().string(MAPPER.writeValueAsString(court.getPrices())));
     }
 
+    @Test
+    void testGivenInvalidCourtIdWhenGetPriceByIdThenNotFound() throws Exception {
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + "0" + PRICE_ENDPOINT + "/0")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void testGivenValidCourtIdAndInvalidPriceIdWhenGetPriceByIdThenNotFound() throws Exception {
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT + "/0")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void testGivenValidCourtIdWhenGetPriceByIdThenOk() throws Exception {
+        Price price = court.getPrices().iterator().next();
+        PriceDTO priceDTO = modelMapper.map(price, PriceDTO.class);
+        mockMvc.perform(
+                        get(COURT_ENDPOINT + court.getId() + PRICE_ENDPOINT + "/" + price.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(MAPPER.writeValueAsString(priceDTO)));
+    }
+
 
     @Test
     void testGivenValidCourtIdWhenSetPriceThenReturnOk() throws Exception {

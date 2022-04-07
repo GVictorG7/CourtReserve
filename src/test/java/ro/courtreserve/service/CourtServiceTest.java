@@ -109,6 +109,31 @@ class CourtServiceTest {
     }
 
     @Test
+    void testGivenInvalidCourtIdWhenGetPriceByIdThenThrow() {
+        assertThrows(NoSuchElementException.class, () -> classUnderTest.getPriceById(1L, 1L));
+    }
+
+    @Test
+    void testGivenValidCourtIdAndInvalidPriceIdWhenGetPriceByIdThenThrow() {
+        Court court = new Court(null, null, Set.of(), null);
+        when(repository.findById(1L)).thenReturn(Optional.of(court));
+        assertThrows(NoSuchElementException.class, () -> classUnderTest.getPriceById(1L, 1L));
+    }
+
+    @Test
+    void testGivenValidCourtIdAndValidPriceIdWhenGetPriceByIdThenReturnPriceDTO() {
+        Price price = new Price(1L, null, null, null, null);
+        Court court = new Court(null, null, Set.of(price), null);
+        when(repository.findById(1L)).thenReturn(Optional.of(court));
+
+        PriceDTO priceDTO = new PriceDTO();
+        when(mapper.map(price, PriceDTO.class)).thenReturn(priceDTO);
+
+        PriceDTO actualResult = classUnderTest.getPriceById(1L, 1L);
+        assertEquals(priceDTO, actualResult);
+    }
+
+    @Test
     void testGivenInvalidCourtIdWhenSetPriceForCourtThenReturnNull() {
         assertNull(classUnderTest.setPriceForCourt(2L, null));
     }
