@@ -37,7 +37,6 @@ public class Court implements Serializable {
     @JoinColumn(name = "court_id")
     private Set<Price> prices = new HashSet<>();
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "court_id")
+    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Reservation> reservations = new HashSet<>();
 }

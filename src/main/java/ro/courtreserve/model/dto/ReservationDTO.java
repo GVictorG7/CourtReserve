@@ -4,12 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservationDTO {
     private Long id;
-    private Date date;
+    private Byte day;
+    private Byte month;
+    private Integer year;
+    private Byte hour;
+    private Long courtId;
+    private Set<Long> userIds = new HashSet<>();
 }

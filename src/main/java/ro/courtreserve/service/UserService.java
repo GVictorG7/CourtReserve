@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ro.courtreserve.model.dto.UserDTO;
+import ro.courtreserve.model.entities.Reservation;
 import ro.courtreserve.model.entities.User;
 import ro.courtreserve.repository.IUserRepository;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,9 @@ public class UserService {
         if (signedInUser == null) {
             return null;
         }
-        return mapper.map(signedInUser, UserDTO.class);
+        UserDTO signedInUserDTO = mapper.map(signedInUser, UserDTO.class);
+        Set<Long> reservationIds = signedInUser.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet());
+        signedInUserDTO.getReservationIds().addAll(reservationIds);
+        return signedInUserDTO;
     }
 }

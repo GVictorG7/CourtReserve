@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
-import ro.courtreserve.model.DayPeriod;
-import ro.courtreserve.model.Season;
 import ro.courtreserve.model.dto.CourtDTO;
 import ro.courtreserve.model.dto.PriceDTO;
 import ro.courtreserve.model.entities.Court;

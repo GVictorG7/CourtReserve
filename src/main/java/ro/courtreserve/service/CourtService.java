@@ -7,6 +7,7 @@ import ro.courtreserve.model.dto.CourtDTO;
 import ro.courtreserve.model.dto.PriceDTO;
 import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
+import ro.courtreserve.model.entities.Reservation;
 import ro.courtreserve.repository.ICourtRepository;
 
 import java.util.List;
@@ -27,7 +28,11 @@ public class CourtService {
      */
     public List<CourtDTO> getAllCourts() {
         List<Court> courts = courtRepository.findAll();
-        return courts.stream().map(courtDTO -> mapper.map(courtDTO, CourtDTO.class)).collect(Collectors.toList());
+        return courts.stream().map(court -> {
+            CourtDTO courtDTO = mapper.map(court, CourtDTO.class);
+            courtDTO.getReservationIds().addAll(court.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet()));
+            return courtDTO;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -37,8 +42,10 @@ public class CourtService {
      * @return the {@link CourtDTO} with the given id or null if no {@link Court} exists with that id
      */
     public CourtDTO getCourtById(Long id) {
-        Court court = courtRepository.findById(id).orElse(null);
-        return court == null ? null : mapper.map(court, CourtDTO.class);
+        Court court = courtRepository.findById(id).orElseThrow();
+        CourtDTO courtDTO = mapper.map(court, CourtDTO.class);
+        courtDTO.getReservationIds().addAll(court.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet()));
+        return courtDTO;
     }
 
     /**
@@ -98,17 +105,15 @@ public class CourtService {
      * correspond to an existing {@link Court}
      */
     public CourtDTO setPriceForCourt(Long courtId, PriceDTO priceDTO) {
-        Court court = courtRepository.findById(courtId).orElse(null);
-        if (court != null) {
-            Price price = mapper.map(priceDTO, Price.class);
+        Court court = courtRepository.findById(courtId).orElseThrow();
+        Price price = mapper.map(priceDTO, Price.class);
 
-            setCourtPrice(court, price);
+        setCourtPrice(court, price);
 
-            Court savedCourt = courtRepository.save(court);
-            return mapper.map(savedCourt, CourtDTO.class);
-        } else {
-            return null;
-        }
+        Court savedCourt = courtRepository.save(court);
+        CourtDTO courtDTO = mapper.map(savedCourt, CourtDTO.class);
+        courtDTO.getReservationIds().addAll(savedCourt.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet()));
+        return courtDTO;
     }
 
     /**

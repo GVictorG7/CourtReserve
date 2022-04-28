@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ro.courtreserve.model.UserRole;
 import ro.courtreserve.model.entities.User;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -23,7 +25,7 @@ class IUserRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        User user = new User(1L, USERNAME, PASSWORD, UserRole.ADMIN, MAIL);
+        User user = new User(1L, USERNAME, PASSWORD, UserRole.ADMIN, MAIL, Set.of());
         classUnderTest.save(user);
     }
 

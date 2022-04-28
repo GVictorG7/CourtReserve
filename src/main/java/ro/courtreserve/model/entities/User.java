@@ -12,8 +12,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -39,4 +42,7 @@ public class User implements Serializable {
 
     @Column(name = "mail", length = 20, nullable = false, unique = true)
     private String mail;
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Reservation> reservations = new HashSet<>();
 }

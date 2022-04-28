@@ -14,5 +14,5 @@ public class CourtDTO {
     private Long id;
     private String address;
     private Set<PriceDTO> prices = new HashSet<>();
-    private Set<ReservationDTO> reservations = new HashSet<>();
+    private Set<Long> reservationIds = new HashSet<>();
 }

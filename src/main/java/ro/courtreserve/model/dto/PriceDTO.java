@@ -15,4 +15,10 @@ public class PriceDTO {
     private Float value;
     private Boolean weekend;
     private DayPeriod dayPeriod;
+
+    public boolean equalsPeriod(Season seasonToCompare, Boolean weekendToCompare, DayPeriod dayPeriodToCompare) {
+        return seasonToCompare == season &&
+                weekendToCompare.equals(weekend) &&
+                dayPeriodToCompare == dayPeriod;
+    }
 }
