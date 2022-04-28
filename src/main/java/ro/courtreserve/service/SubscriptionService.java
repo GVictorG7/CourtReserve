@@ -8,6 +8,7 @@ import ro.courtreserve.model.entities.Subscription;
 import ro.courtreserve.model.entities.User;
 import ro.courtreserve.repository.ISubscriptionRepository;
 import ro.courtreserve.repository.IUserRepository;
+import ro.courtreserve.util.MailService;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class SubscriptionService {
     private final ISubscriptionRepository subscriptionRepository;
     private final IUserRepository userRepository;
     private final PriceService priceService;
+    private final MailService mailService;
     private final ModelMapper mapper;
 
     /**
@@ -26,6 +28,8 @@ public class SubscriptionService {
         subscription.getUsers().add(user);
         Subscription savedSubscription = subscriptionRepository.save(subscription);
         SubscriptionDTO savedSubscriptionDTO = mapper.map(savedSubscription, SubscriptionDTO.class);
-        return priceService.calculateTotalPriceOfSubscription(savedSubscriptionDTO);
+        Float price = priceService.calculateTotalPriceOfSubscription(savedSubscriptionDTO);
+        mailService.sendEmail(user.getMail(), savedSubscriptionDTO, price);
+        return price;
     }
 }

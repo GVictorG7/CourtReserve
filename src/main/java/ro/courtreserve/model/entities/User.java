@@ -40,7 +40,7 @@ public class User implements Serializable {
     @Column(name = "role", length = 20, nullable = false)
     private UserRole role;
 
-    @Column(name = "mail", length = 20, nullable = false, unique = true)
+    @Column(name = "mail", length = 30, nullable = false, unique = true)
     private String mail;
 
     @ManyToMany(mappedBy = "users")
