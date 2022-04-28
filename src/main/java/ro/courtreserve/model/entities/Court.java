@@ -39,4 +39,7 @@ public class Court implements Serializable {
 
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Reservation> reservations = new HashSet<>();
+
+    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Subscription> subscriptions = new HashSet<>();
 }

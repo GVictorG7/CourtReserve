@@ -45,4 +45,7 @@ public class User implements Serializable {
 
     @ManyToMany(mappedBy = "users")
     private Set<Reservation> reservations = new HashSet<>();
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Subscription> subscriptions = new HashSet<>();
 }

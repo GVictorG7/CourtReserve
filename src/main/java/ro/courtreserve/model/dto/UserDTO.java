@@ -17,4 +17,5 @@ public class UserDTO {
     private UserRole role;
     private String mail;
     private Set<Long> reservationIds = new HashSet<>();
+    private Set<Long> subscriptionIds = new HashSet<>();
 }

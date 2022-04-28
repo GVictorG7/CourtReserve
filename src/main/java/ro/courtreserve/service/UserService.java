@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ro.courtreserve.model.dto.UserDTO;
 import ro.courtreserve.model.entities.Reservation;
+import ro.courtreserve.model.entities.Subscription;
 import ro.courtreserve.model.entities.User;
 import ro.courtreserve.repository.IUserRepository;
 
@@ -32,6 +33,8 @@ public class UserService {
         UserDTO signedInUserDTO = mapper.map(signedInUser, UserDTO.class);
         Set<Long> reservationIds = signedInUser.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet());
         signedInUserDTO.getReservationIds().addAll(reservationIds);
+        Set<Long> subscriptionIds = signedInUser.getSubscriptions().stream().map(Subscription::getId).collect(Collectors.toSet());
+        signedInUserDTO.getSubscriptionIds().addAll(subscriptionIds);
         return signedInUserDTO;
     }
 }

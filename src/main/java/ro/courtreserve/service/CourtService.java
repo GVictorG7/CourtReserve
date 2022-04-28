@@ -8,6 +8,7 @@ import ro.courtreserve.model.dto.PriceDTO;
 import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.model.entities.Reservation;
+import ro.courtreserve.model.entities.Subscription;
 import ro.courtreserve.repository.ICourtRepository;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class CourtService {
         return courts.stream().map(court -> {
             CourtDTO courtDTO = mapper.map(court, CourtDTO.class);
             courtDTO.getReservationIds().addAll(court.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet()));
+            courtDTO.getSubscriptionIds().addAll(court.getSubscriptions().stream().map(Subscription::getId).collect(Collectors.toSet()));
             return courtDTO;
         }).collect(Collectors.toList());
     }
@@ -45,6 +47,7 @@ public class CourtService {
         Court court = courtRepository.findById(id).orElseThrow();
         CourtDTO courtDTO = mapper.map(court, CourtDTO.class);
         courtDTO.getReservationIds().addAll(court.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet()));
+        courtDTO.getSubscriptionIds().addAll(court.getSubscriptions().stream().map(Subscription::getId).collect(Collectors.toSet()));
         return courtDTO;
     }
 
@@ -113,6 +116,7 @@ public class CourtService {
         Court savedCourt = courtRepository.save(court);
         CourtDTO courtDTO = mapper.map(savedCourt, CourtDTO.class);
         courtDTO.getReservationIds().addAll(savedCourt.getReservations().stream().map(Reservation::getId).collect(Collectors.toSet()));
+        courtDTO.getSubscriptionIds().addAll(savedCourt.getSubscriptions().stream().map(Subscription::getId).collect(Collectors.toSet()));
         return courtDTO;
     }
 
