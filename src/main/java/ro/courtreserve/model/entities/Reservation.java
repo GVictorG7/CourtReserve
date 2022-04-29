@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -52,4 +53,7 @@ public class Reservation implements Serializable {
     })
     @JoinTable()
     private Set<User> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "reservation", fetch = FetchType.EAGER)
+    private Set<Invitation> invitationsFor = new HashSet<>();
 }

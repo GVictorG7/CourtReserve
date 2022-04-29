@@ -3,6 +3,7 @@ package ro.courtreserve.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import ro.courtreserve.model.dto.InvitationDTO;
 import ro.courtreserve.model.dto.UserDTO;
 import ro.courtreserve.model.entities.Reservation;
 import ro.courtreserve.model.entities.Subscription;
@@ -35,6 +36,14 @@ public class UserService {
         signedInUserDTO.getReservationIds().addAll(reservationIds);
         Set<Long> subscriptionIds = signedInUser.getSubscriptions().stream().map(Subscription::getId).collect(Collectors.toSet());
         signedInUserDTO.getSubscriptionIds().addAll(subscriptionIds);
+        Set<InvitationDTO> sentInvitations = signedInUser.getSendInvitations().stream().map(invitation ->
+                new InvitationDTO(invitation.getFrom().getId(), invitation.getTo().getId(), invitation.getReservation().getId())
+        ).collect(Collectors.toSet());
+        signedInUserDTO.getSentInvitation().addAll(sentInvitations);
+        Set<InvitationDTO> receivedInvitations = signedInUser.getReceivedInvitations().stream().map(invitation ->
+                new InvitationDTO(invitation.getFrom().getId(), invitation.getTo().getId(), invitation.getReservation().getId())
+        ).collect(Collectors.toSet());
+        signedInUserDTO.getReceivedInvitation().addAll(receivedInvitations);
         return signedInUserDTO;
     }
 }

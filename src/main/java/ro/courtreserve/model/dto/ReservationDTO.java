@@ -18,4 +18,5 @@ public class ReservationDTO {
     private Byte hour;
     private Long courtId;
     private Set<Long> userIds = new HashSet<>();
+    private Set<InvitationDTO> invitations = new HashSet<>();
 }

@@ -18,4 +18,6 @@ public class UserDTO {
     private String mail;
     private Set<Long> reservationIds = new HashSet<>();
     private Set<Long> subscriptionIds = new HashSet<>();
+    private Set<InvitationDTO> sentInvitation = new HashSet<>();
+    private Set<InvitationDTO> receivedInvitation = new HashSet<>();
 }

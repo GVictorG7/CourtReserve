@@ -10,9 +10,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -48,4 +50,10 @@ public class User implements Serializable {
 
     @ManyToMany(mappedBy = "users")
     private Set<Subscription> subscriptions = new HashSet<>();
+
+    @OneToMany(mappedBy = "from", fetch = FetchType.EAGER)
+    private Set<Invitation> sendInvitations = new HashSet<>();
+
+    @OneToMany(mappedBy = "to", fetch = FetchType.EAGER)
+    private Set<Invitation> receivedInvitations = new HashSet<>();
 }
