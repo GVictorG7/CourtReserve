@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ro.courtreserve.model.dto.CourtDTO;
 import ro.courtreserve.model.dto.PriceDTO;
+import ro.courtreserve.model.dto.ReservationDTO;
 import ro.courtreserve.service.CourtService;
 
 import java.util.List;
@@ -78,6 +79,12 @@ public class CourtController {
     public ResponseEntity<Void> deleteCourt(@PathVariable Long id) {
         service.deleteCourt(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<Boolean> isCourtAvailable(@PathVariable Long id, @RequestBody ReservationDTO reservation) {
+        Boolean isAvailable = service.isCourtAvailable(id, reservation);
+        return ResponseEntity.ok(isAvailable);
     }
 
     /**

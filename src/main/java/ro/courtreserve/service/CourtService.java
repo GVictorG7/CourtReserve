@@ -5,11 +5,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ro.courtreserve.model.dto.CourtDTO;
 import ro.courtreserve.model.dto.PriceDTO;
+import ro.courtreserve.model.dto.ReservationDTO;
 import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.model.entities.Reservation;
 import ro.courtreserve.model.entities.Subscription;
 import ro.courtreserve.repository.ICourtRepository;
+import ro.courtreserve.repository.IReservationRepository;
+import ro.courtreserve.repository.ISubscriptionRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,6 +23,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CourtService {
     private final ICourtRepository courtRepository;
+    private final IReservationRepository reservationRepository;
+    private final ISubscriptionRepository subscriptionRepository;
     private final ModelMapper mapper;
 
     /**
@@ -147,5 +152,14 @@ public class CourtService {
         court.getPrices().stream().filter(p -> p.getId().equals(newPrice.getId())).findFirst().ifPresentOrElse(
                 price -> price.overrideFieldValues(newPrice),
                 () -> court.getPrices().add(newPrice));
+    }
+
+    public boolean isCourtAvailable(Long id, ReservationDTO reservation) {
+        Court court = courtRepository.findById(id).orElseThrow();
+        boolean notExistsReservation = reservationRepository.findAllByCourtAndDayAndMonthAndYearAndHour(
+                court, reservation.getDay(), reservation.getMonth(), reservation.getYear(), reservation.getHour()).isEmpty();
+        boolean notExistsSubscription = subscriptionRepository.findAllByCourtAndStartDateDayAndStartDateMonthAndStartDateYearAndStartHour(
+                court, reservation.getDay(), reservation.getMonth(), reservation.getYear(), reservation.getHour()).isEmpty();
+        return notExistsReservation && notExistsSubscription;
     }
 }
