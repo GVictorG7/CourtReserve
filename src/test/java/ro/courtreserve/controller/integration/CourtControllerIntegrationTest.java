@@ -19,9 +19,7 @@ import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.repository.ICourtRepository;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,8 +48,9 @@ class CourtControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(classUnderTest).build();
-        Set<Price> prices = Set.of(new Price(1L, Season.WINTER, 10F, Boolean.TRUE, DayPeriod.MORNING));
-        court = repository.save(new Court(1L, ADDRESS, prices, new HashSet<>()));
+        Court courtToSave = new Court(1L, ADDRESS);
+        courtToSave.getPrices().add(new Price(1L, Season.WINTER, 10F, Boolean.TRUE, DayPeriod.MORNING));
+        court = repository.save(courtToSave);
     }
 
     @AfterEach
@@ -97,7 +96,7 @@ class CourtControllerIntegrationTest {
     void testSaveNewCourt() throws Exception {
         CourtDTO courtDTO = new CourtDTO();
         courtDTO.setAddress("Address2");
-        CourtDTO savedCourtDTO = new CourtDTO(court.getId() + 2, "Address2", Set.of(), Set.of());
+        CourtDTO savedCourtDTO = new CourtDTO(court.getId() + 2, "Address2");
         mockMvc.perform(
                         post(COURT_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)

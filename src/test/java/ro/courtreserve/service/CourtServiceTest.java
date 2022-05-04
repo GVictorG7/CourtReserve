@@ -10,8 +10,9 @@ import ro.courtreserve.model.dto.PriceDTO;
 import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.repository.ICourtRepository;
+import ro.courtreserve.repository.IReservationRepository;
+import ro.courtreserve.repository.ISubscriptionRepository;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -19,7 +20,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -33,11 +33,15 @@ class CourtServiceTest {
     private ICourtRepository repository;
     @Mock
     private ModelMapper mapper;
+    @Mock
+    private IReservationRepository reservationRepository;
+    @Mock
+    private ISubscriptionRepository subscriptionRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        classUnderTest = new CourtService(repository, mapper);
+        classUnderTest = new CourtService(repository, reservationRepository, subscriptionRepository, mapper);
     }
 
     @Test
@@ -66,19 +70,18 @@ class CourtServiceTest {
         when(repository.findById(id)).thenReturn(Optional.empty());
         when(mapper.map(null, CourtDTO.class)).thenReturn(null);
 
-        CourtDTO actualResult = classUnderTest.getCourtById(id);
-        assertNull(actualResult);
+        assertThrows(NoSuchElementException.class, () -> classUnderTest.getCourtById(id));
     }
 
     @Test
     void testSaveCourt() {
-        CourtDTO courtDTO = new CourtDTO(null, ADDRESS, null, null);
-        Court mappedCourt = new Court(null, ADDRESS, null, null);
+        CourtDTO courtDTO = new CourtDTO(null, ADDRESS);
+        Court mappedCourt = new Court(null, ADDRESS);
         when(mapper.map(courtDTO, Court.class)).thenReturn(mappedCourt);
 
-        Court savedCourt = new Court(1L, ADDRESS, null, null);
+        Court savedCourt = new Court(1L, ADDRESS);
         when(repository.save(mappedCourt)).thenReturn(savedCourt);
-        CourtDTO savedCourtDTO = new CourtDTO(1L, ADDRESS, null, null);
+        CourtDTO savedCourtDTO = new CourtDTO(1L, ADDRESS);
         when(mapper.map(savedCourt, CourtDTO.class)).thenReturn(savedCourtDTO);
 
         CourtDTO actualResult = classUnderTest.saveCourt(courtDTO);
@@ -101,8 +104,7 @@ class CourtServiceTest {
 
     @Test
     void testGivenValidCourtIdWhenGetAllPricesForCourtThenReturn() {
-        Court court = new Court(null, null, Set.of(), null);
-        when(repository.findById(1L)).thenReturn(Optional.of(court));
+        when(repository.findById(1L)).thenReturn(Optional.of(new Court()));
         assertEquals(Set.of(), classUnderTest.getAllPricesForCourt(1L));
     }
 
@@ -113,15 +115,15 @@ class CourtServiceTest {
 
     @Test
     void testGivenValidCourtIdAndInvalidPriceIdWhenGetPriceByIdThenThrow() {
-        Court court = new Court(null, null, Set.of(), null);
-        when(repository.findById(1L)).thenReturn(Optional.of(court));
+        when(repository.findById(1L)).thenReturn(Optional.of(new Court()));
         assertThrows(NoSuchElementException.class, () -> classUnderTest.getPriceById(1L, 1L));
     }
 
     @Test
     void testGivenValidCourtIdAndValidPriceIdWhenGetPriceByIdThenReturnPriceDTO() {
         Price price = new Price(1L, null, null, null, null);
-        Court court = new Court(null, null, Set.of(price), null);
+        Court court = new Court();
+        court.getPrices().add(price);
         when(repository.findById(1L)).thenReturn(Optional.of(court));
 
         PriceDTO priceDTO = new PriceDTO();
@@ -133,7 +135,7 @@ class CourtServiceTest {
 
     @Test
     void testGivenInvalidCourtIdWhenSetPriceForCourtThenReturnNull() {
-        assertNull(classUnderTest.setPriceForCourt(2L, null));
+        assertThrows(NoSuchElementException.class, () -> classUnderTest.setPriceForCourt(2L, null));
     }
 
     @Test
@@ -158,8 +160,8 @@ class CourtServiceTest {
     @Test
     void testGivenValidCourtIdWhenSetUpdatedPriceForCourtThenReturnPriceDTO() {
         Price price = new Price(1L, null, null, null, null);
-        Set<Price> prices = Set.of(price);
-        Court court = new Court(null, null, prices, null);
+        Court court = new Court();
+        court.getPrices().add(price);
 
         when(repository.findById(2L)).thenReturn(Optional.of(court));
         PriceDTO priceDTO = new PriceDTO();
@@ -185,7 +187,7 @@ class CourtServiceTest {
 
     @Test
     void testGivenValidCourtIdAndInvalidPriceIdWhenDeletePriceForCourtThenThrows() {
-        Court court = new Court(2L, null, new HashSet<>(), null);
+        Court court = new Court(2L, null);
         when(repository.findById(2L)).thenReturn(Optional.of(court));
         assertThrows(NoSuchElementException.class, () -> classUnderTest.deletePriceOfCourt(2L, null));
     }
@@ -193,9 +195,8 @@ class CourtServiceTest {
     @Test
     void testGivenValidCourtIdAndValidPriceIdWhenDeletePriceForCourtThenNotThrow() {
         Price price = new Price(1L, null, null, null, null);
-        Set<Price> prices = new HashSet<>();
-        prices.add(price);
-        Court court = new Court(1L, null, prices, null);
+        Court court = new Court(1L, null);
+        court.getPrices().add(price);
 
         when(repository.findById(1L)).thenReturn(Optional.of(court));
 

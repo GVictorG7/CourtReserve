@@ -73,7 +73,7 @@ class CourtControllerTest {
     @Test
     void testGivenInvalidIdWhenGetCourtByIdThenReturnNull() throws Exception {
         Long id = 1L;
-        when(service.getCourtById(id)).thenReturn(null);
+        when(service.getCourtById(id)).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(
                         get(COURT_ENDPOINT + id)
@@ -181,7 +181,7 @@ class CourtControllerTest {
     @Test
     void testGivenInvalidCourtIdWhenSetPriceThenReturnNotFound() throws Exception {
         PriceDTO priceDTO = new PriceDTO();
-        when(service.setPriceForCourt(1L, priceDTO)).thenReturn(null);
+        when(service.setPriceForCourt(1L, priceDTO)).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(
                         post(COURT_ENDPOINT + "1" + PRICE_ENDPOINT)

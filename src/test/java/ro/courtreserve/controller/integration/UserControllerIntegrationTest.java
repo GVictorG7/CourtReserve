@@ -15,8 +15,6 @@ import ro.courtreserve.model.dto.UserDTO;
 import ro.courtreserve.model.entities.User;
 import ro.courtreserve.repository.IUserRepository;
 
-import java.util.Set;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,7 +38,7 @@ class UserControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(classUnderTest).build();
-        User user = new User(1L, USERNAME, PASSWORD, UserRole.ADMIN, MAIL, Set.of());
+        User user = new User(1L, USERNAME, PASSWORD, UserRole.ADMIN, MAIL);
         repository.save(user);
     }
 
