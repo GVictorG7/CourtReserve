@@ -50,9 +50,12 @@ public class CourtController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<CourtDTO> getCourtById(@PathVariable Long id) {
-        CourtDTO courtDTO = service.getCourtById(id);
-        HttpStatus status = courtDTO == null ? NOT_FOUND : OK;
-        return ResponseEntity.status(status).body(courtDTO);
+        try {
+            CourtDTO courtDTO = service.getCourtById(id);
+            return ResponseEntity.ok(courtDTO);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -135,9 +138,12 @@ public class CourtController {
      */
     @PostMapping("/{id}/price")
     public ResponseEntity<CourtDTO> setPrice(@PathVariable Long id, @RequestBody PriceDTO priceDTO) {
-        CourtDTO savedCourt = service.setPriceForCourt(id, priceDTO);
-        HttpStatus status = savedCourt == null ? NOT_FOUND : OK;
-        return ResponseEntity.status(status).body(savedCourt);
+        try {
+            CourtDTO savedCourt = service.setPriceForCourt(id, priceDTO);
+            return ResponseEntity.ok(savedCourt);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
