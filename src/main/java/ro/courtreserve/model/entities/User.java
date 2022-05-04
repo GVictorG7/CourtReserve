@@ -45,10 +45,10 @@ public class User implements Serializable {
     @Column(name = "mail", length = 30, nullable = false, unique = true)
     private String mail;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Reservation> reservations = new HashSet<>();
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Subscription> subscriptions = new HashSet<>();
 
     @OneToMany(mappedBy = "from", fetch = FetchType.EAGER)
@@ -56,4 +56,12 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "to", fetch = FetchType.EAGER)
     private Set<Invitation> receivedInvitations = new HashSet<>();
+
+    public User(Long id, String username, String password, UserRole role, String mail) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.mail = mail;
+    }
 }

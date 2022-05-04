@@ -20,4 +20,11 @@ public class UserDTO {
     private Set<Long> subscriptionIds = new HashSet<>();
     private Set<InvitationDTO> sentInvitation = new HashSet<>();
     private Set<InvitationDTO> receivedInvitation = new HashSet<>();
+
+    public UserDTO(String username, String password, UserRole role, String mail) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.mail = mail;
+    }
 }
