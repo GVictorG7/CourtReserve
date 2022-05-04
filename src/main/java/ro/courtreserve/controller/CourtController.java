@@ -86,7 +86,7 @@ public class CourtController {
 
     @GetMapping("/{id}/availability")
     public ResponseEntity<Boolean> isCourtAvailable(@PathVariable Long id, @RequestBody ReservationDTO reservation) {
-        Boolean isAvailable = service.isCourtAvailable(id, reservation);
+        Boolean isAvailable = service.isCourtAvailable(id, reservation.getDay(), reservation.getMonth(), reservation.getYear(), reservation.getHour());
         return ResponseEntity.ok(isAvailable);
     }
 

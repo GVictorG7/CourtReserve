@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ro.courtreserve.model.dto.ReservationDTO;
 import ro.courtreserve.service.ReservationService;
+import ro.courtreserve.util.exception.CourtUnavailableException;
 
 @Controller
 @RequestMapping("/reservation")
@@ -17,7 +18,11 @@ public class ReservationController {
 
     @PostMapping("/")
     public ResponseEntity<Float> saveReservation(@RequestBody ReservationDTO reservationDTO) {
-        Float price = service.saveReservation(reservationDTO);
-        return ResponseEntity.ok(price);
+        try {
+            Float price = service.saveReservation(reservationDTO);
+            return ResponseEntity.ok(price);
+        } catch (CourtUnavailableException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

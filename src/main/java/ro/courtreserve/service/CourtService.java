@@ -5,7 +5,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ro.courtreserve.model.dto.CourtDTO;
 import ro.courtreserve.model.dto.PriceDTO;
-import ro.courtreserve.model.dto.ReservationDTO;
 import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
 import ro.courtreserve.model.entities.Reservation;
@@ -154,12 +153,12 @@ public class CourtService {
                 () -> court.getPrices().add(newPrice));
     }
 
-    public boolean isCourtAvailable(Long id, ReservationDTO reservation) {
+    public boolean isCourtAvailable(Long id, Byte day, Byte month, Integer year, Byte hour) {
         Court court = courtRepository.findById(id).orElseThrow();
         boolean notExistsReservation = reservationRepository.findAllByCourtAndDayAndMonthAndYearAndHour(
-                court, reservation.getDay(), reservation.getMonth(), reservation.getYear(), reservation.getHour()).isEmpty();
+                court, day, month, year, hour).isEmpty();
         boolean notExistsSubscription = subscriptionRepository.findAllByCourtAndStartDateDayAndStartDateMonthAndStartDateYearAndStartHour(
-                court, reservation.getDay(), reservation.getMonth(), reservation.getYear(), reservation.getHour()).isEmpty();
+                court, day, month, year, hour).isEmpty();
         return notExistsReservation && notExistsSubscription;
     }
 }

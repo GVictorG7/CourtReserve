@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ro.courtreserve.model.dto.SubscriptionDTO;
 import ro.courtreserve.service.SubscriptionService;
+import ro.courtreserve.util.exception.CourtUnavailableException;
 
 @Controller
 @RequestMapping("/subscription")
@@ -17,7 +18,11 @@ public class SubscriptionController {
 
     @PostMapping("/")
     public ResponseEntity<Float> saveSubscription(@RequestBody SubscriptionDTO subscriptionDTO) {
-        Float totalPrice = service.saveSubscription(subscriptionDTO);
-        return ResponseEntity.ok(totalPrice);
+        try {
+            Float totalPrice = service.saveSubscription(subscriptionDTO);
+            return ResponseEntity.ok(totalPrice);
+        } catch (CourtUnavailableException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
