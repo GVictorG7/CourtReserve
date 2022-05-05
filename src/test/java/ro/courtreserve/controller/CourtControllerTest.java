@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ro.courtreserve.model.dto.CourtDTO;
 import ro.courtreserve.model.dto.PriceDTO;
+import ro.courtreserve.model.dto.ReservationDTO;
 import ro.courtreserve.service.CourtService;
 
 import java.util.List;
@@ -154,7 +155,7 @@ class CourtControllerTest {
         when(service.getPriceById(1L, 1L)).thenReturn(new PriceDTO());
 
         mockMvc.perform(
-                        get(COURT_ENDPOINT + "1" + PRICE_ENDPOINT+ "/1")
+                        get(COURT_ENDPOINT + "1" + PRICE_ENDPOINT + "/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -213,5 +214,21 @@ class CourtControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
         verify(service).deletePriceOfCourt(1L, 1L);
+    }
+
+    @Test
+    void testIsCourtAvailable() throws Exception {
+        Byte day = null;
+        Byte month = null;
+        Integer year = null;
+        Byte hour = null;
+        ReservationDTO reservationDTO = new ReservationDTO(day, month, year, hour);
+        when(service.isCourtAvailable(1L, day, month, year, hour)).thenReturn(Boolean.TRUE);
+        mockMvc.perform(get(COURT_ENDPOINT + 1 + "/availability")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(MAPPER.writeValueAsString(reservationDTO)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(Boolean.TRUE.toString()));
     }
 }

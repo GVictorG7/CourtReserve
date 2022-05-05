@@ -9,6 +9,7 @@ import ro.courtreserve.model.dto.CourtDTO;
 import ro.courtreserve.model.dto.PriceDTO;
 import ro.courtreserve.model.entities.Court;
 import ro.courtreserve.model.entities.Price;
+import ro.courtreserve.model.entities.Subscription;
 import ro.courtreserve.repository.ICourtRepository;
 import ro.courtreserve.repository.IReservationRepository;
 import ro.courtreserve.repository.ISubscriptionRepository;
@@ -20,7 +21,9 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,8 +49,10 @@ class CourtServiceTest {
 
     @Test
     void testGetAllCourts() {
-        when(repository.findAll()).thenReturn(List.of());
-        assertEquals(List.of(), classUnderTest.getAllCourts());
+        List<Court> courts = List.of(new Court());
+        when(repository.findAll()).thenReturn(courts);
+        when(mapper.map(courts.get(0), CourtDTO.class)).thenReturn(new CourtDTO());
+        assertEquals(List.of(new CourtDTO()), classUnderTest.getAllCourts());
     }
 
     @Test
@@ -203,5 +208,38 @@ class CourtServiceTest {
         assertDoesNotThrow(() -> classUnderTest.deletePriceOfCourt(1L, 1L));
         court.setPrices(Set.of());
         verify(repository).save(court);
+    }
+
+    @Test
+    void testGivenInvalidCourtIdWhenIsCourtAvailableThenThrow() {
+        when(repository.findById(1L)).thenThrow(NoSuchElementException.class);
+        assertThrows(NoSuchElementException.class,
+                () -> classUnderTest.isCourtAvailable(1L, null, null, null, null));
+    }
+
+    @Test
+    void testGivenValidCourtIdAndNonExistingConflictsWhenIsCourtAvailableThenReturnTrue() {
+        Byte day = null;
+        Byte month = null;
+        Integer year = null;
+        Byte hour = null;
+        Court court = new Court();
+        when(repository.findById(1L)).thenReturn(Optional.of(court));
+        when(reservationRepository.findAllByCourtAndDayAndMonthAndYearAndHour(court, day, month, year, hour)).thenReturn(List.of());
+        when(subscriptionRepository.findAllByCourtAndStartDateDayAndStartDateMonthAndStartDateYearAndStartHour(court, day, month, year, hour)).thenReturn(List.of());
+        assertTrue(classUnderTest.isCourtAvailable(1L, day, month, year, hour));
+    }
+
+    @Test
+    void testGivenValidCourtIdAndExistingConflictsWhenIsCourtAvailableThenReturnFalse() {
+        Byte day = null;
+        Byte month = null;
+        Integer year = null;
+        Byte hour = null;
+        Court court = new Court();
+        when(repository.findById(1L)).thenReturn(Optional.of(court));
+        when(reservationRepository.findAllByCourtAndDayAndMonthAndYearAndHour(court, day, month, year, hour)).thenReturn(List.of());
+        when(subscriptionRepository.findAllByCourtAndStartDateDayAndStartDateMonthAndStartDateYearAndStartHour(court, day, month, year, hour)).thenReturn(List.of(new Subscription()));
+        assertFalse(classUnderTest.isCourtAvailable(1L, day, month, year, hour));
     }
 }

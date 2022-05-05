@@ -19,4 +19,11 @@ public class ReservationDTO {
     private Long courtId;
     private Set<Long> userIds = new HashSet<>();
     private Set<InvitationDTO> invitations = new HashSet<>();
+
+    public ReservationDTO(Byte day, Byte month, Integer year, Byte hour) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.hour = hour;
+    }
 }
