@@ -21,9 +21,6 @@ public class SubscriptionService {
     private final CourtService courtService;
     private final ModelMapper mapper;
 
-    /**
-     * month, court, time interval
-     */
     public Float saveSubscription(SubscriptionDTO rawSubscriptionDTO) throws CourtUnavailableException {
         boolean isCourtAvailable = courtService.isCourtAvailable(rawSubscriptionDTO.getCourtId(), rawSubscriptionDTO.getStartDateDay(),
                 rawSubscriptionDTO.getStartDateMonth(), rawSubscriptionDTO.getStartDateYear(), rawSubscriptionDTO.getStartHour());
